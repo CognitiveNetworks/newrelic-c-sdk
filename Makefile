@@ -40,7 +40,17 @@ VERSION_FLAGS += -DNEWRELIC_VERSION=$(AGENT_VERSION)
 
 export AGENT_VERSION VERSION_FLAGS
 
+.PHONY: all
 all: libnewrelic.a newrelic-daemon
+
+.PHONY: tgz
+tgz: libnewrelic.a newrelic-daemon
+	mkdir newrelic
+	cp libnewrelic.a newrelic/
+	cp newrelic-daemon newrelic/
+	cp include/libnewrelic.h newrelic/
+	tar czf newrelic.tgz newrelic
+	rm -rf newrelic
 
 ifeq (Darwin,$(UNAME))
 #
@@ -129,8 +139,12 @@ tests-clean:
 	$(MAKE) -C tests clean
 	$(MAKE) -C vendor clean
 
+.PHONY: tgz-clean
+tgz-clean:
+	rm -rf newrelic
+
 .PHONY: clean
-clean: axiom-clean daemon-clean src-clean tests-clean
+clean: axiom-clean daemon-clean src-clean tests-clean tgz-clean
 	rm -f *.o libnewrelic.a libnewrelic.so
 
 .PHONY: integration
