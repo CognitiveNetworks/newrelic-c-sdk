@@ -31,6 +31,7 @@ C_AGENT_CFLAGS += -Wpointer-arith
 C_AGENT_CFLAGS += -Wshadow
 C_AGENT_CFLAGS += -Wstrict-prototypes
 C_AGENT_CFLAGS += -Wswitch-enum
+C_AGENT_CFLAGS += -DNEWRELIC_ENABLE
 
 ifeq (1,$(HAVE_CLANG))
 C_AGENT_CFLAGS += -Wbool-conversion

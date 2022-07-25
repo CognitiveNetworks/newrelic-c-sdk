@@ -543,6 +543,33 @@ typedef struct _newrelic_external_segment_params_t {
 } newrelic_external_segment_params_t;
 
 /**
+ * @brief A segment within a transaction.
+ *
+ * Within an active transaction, instrument additional segments for greater
+ * granularity.
+ *
+ * -For external calls:   newrelic_start_external_segment().
+ * -For datastore calls:  newrelic_start_datastore_segment().
+ * -For arbitrary code:   newrelic_start_segment().
+ *
+ * All segments must be ended with newrelic_end_segment(). Examples of
+ * instrumenting segments are available in the examples directory.
+ */
+typedef struct _newrelic_segment_t newrelic_segment_t;
+
+/**
+ * @brief A Custom Event.
+ *
+ * The C SDK provides a Custom Events API that allows one to send custom events
+ * to New Relic Insights. To send an event, start a transaction and use the
+ * newrelic_create_custom_event() and newrelic_record_custom_event()
+ * functions. Examples of sending custom events are available in the
+ * examples directory.
+ */
+typedef struct _newrelic_custom_event_t newrelic_custom_event_t;
+
+#ifdef NEWRELIC_ENABLE
+/**
  * @brief Configure the C SDK's logging system.
  *
  * If the logging system was previously initialized (either by a prior call to
@@ -823,32 +850,6 @@ void newrelic_notice_error(newrelic_txn_t* transaction,
                            int priority,
                            const char* errmsg,
                            const char* errclass);
-
-/**
- * @brief A segment within a transaction.
- *
- * Within an active transaction, instrument additional segments for greater
- * granularity.
- *
- * -For external calls:   newrelic_start_external_segment().
- * -For datastore calls:  newrelic_start_datastore_segment().
- * -For arbitrary code:   newrelic_start_segment().
- *
- * All segments must be ended with newrelic_end_segment(). Examples of
- * instrumenting segments are available in the examples directory.
- */
-typedef struct _newrelic_segment_t newrelic_segment_t;
-
-/**
- * @brief A Custom Event.
- *
- * The C SDK provides a Custom Events API that allows one to send custom events
- * to New Relic Insights. To send an event, start a transaction and use the
- * newrelic_create_custom_event() and newrelic_record_custom_event()
- * functions. Examples of sending custom events are available in the
- * examples directory.
- */
-typedef struct _newrelic_custom_event_t newrelic_custom_event_t;
 
 /**
  * @brief Record the start of a custom segment in a transaction.
@@ -1247,6 +1248,48 @@ bool newrelic_accept_distributed_trace_payload_httpsafe(
  */
 bool newrelic_set_transaction_name(newrelic_txn_t* transaction,
                                    const char* transaction_name);
+
+#else
+
+#define newrelic_accept_distributed_trace_payload(ARG_1, ARG_2, ARG_3) true
+#define newrelic_accept_distributed_trace_payload_httpsafe(ARG_1, ARG_2, ARG_3) true
+#define newrelic_add_attribute_double(ARG_1, ARG_2, ARG_3) true
+#define newrelic_add_attribute_int(ARG_1, ARG_2, ARG_3) true
+#define newrelic_add_attribute_long(ARG_1, ARG_2, ARG_3) true
+#define newrelic_add_attribute_string(ARG_1, ARG_2, ARG_3) true
+#define newrelic_configure_log(ARG_1, ARG_2) true
+#define newrelic_create_app(ARG_1, ARG_2) NULL
+#define newrelic_create_app_config(ARG_1, ARG_2) ((newrelic_app_config_t*)malloc(sizeof(newrelic_app_config_t)))
+#define newrelic_create_custom_event(ARG_1) NULL
+#define newrelic_create_distributed_trace_payload(ARG_1, ARG_2) NULL
+#define newrelic_create_distributed_trace_payload_httpsafe(ARG_1, ARG_2, ARG_3) NULL
+#define newrelic_custom_event_add_attribute_double(ARG_1, ARG_2, ARG_3) true
+#define newrelic_custom_event_add_attribute_int(ARG_1, ARG_2, ARG_3) true
+#define newrelic_custom_event_add_attribute_long(ARG_1, ARG_2, ARG_3) true
+#define newrelic_custom_event_add_attribute_string(ARG_1, ARG_2, ARG_3) true
+#define newrelic_destroy_app(ARG_1) (free(*ARG_1), *ARG_1 = NULL /*, true */)
+#define newrelic_destroy_app_config(ARG_1) (free(*ARG_1), *ARG_1 = NULL /*, true */)
+#define newrelic_discard_custom_event(ARG_1) /* void */
+#define newrelic_end_segment(ARG_1, ARG_2) (free(*ARG_2), *ARG_2 = NULL /*, true */)
+#define newrelic_end_transaction(ARG_1) (*ARG_1 = NULL /*, true */)
+#define newrelic_ignore_transaction(ARG_1) true
+#define newrelic_init(ARG_1, ARG_2) true
+#define newrelic_notice_error(ARG_1, ARG_2, ARG_3) true
+#define newrelic_record_custom_event(ARG_1, ARG_2) /* void */
+#define newrelic_record_custom_metric(ARG_1, ARG_2, ARG_3) true
+#define newrelic_set_segment_parent(ARG_1, ARG_2) true
+#define newrelic_set_segment_parent_root(ARG_1) true
+#define newrelic_set_segment_timing(ARG_1, ARG_2, ARG_3) true
+#define newrelic_set_transaction_name(ARG_1, ARG_2) true
+#define newrelic_set_transaction_timing(ARG_1, ARG_2, ARG_3) true
+#define newrelic_start_datastore_segment(ARG_1, ARG_2) (newrelic_segment_t*)(((size_t)ARG_2) ^ ((size_t)ARG_2))
+#define newrelic_start_external_segment(ARG_1, ARG_2) NULL
+#define newrelic_start_non_web_transaction(ARG_1, ARG_2) NULL
+#define newrelic_start_segment(ARG_1, ARG_2, ARG_3) NULL
+#define newrelic_start_web_transaction(ARG_1, ARG_2) NULL
+#define newrelic_version() ""
+
+#endif
 
 /**
  * A list of examples for Doxygen to cross-reference. If a function in
