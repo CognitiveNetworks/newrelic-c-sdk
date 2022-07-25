@@ -141,7 +141,7 @@ tests-clean:
 
 .PHONY: tgz-clean
 tgz-clean:
-	rm -rf newrelic
+	rm -rf newrelic newrelic.tgz
 
 .PHONY: clean
 clean: axiom-clean daemon-clean src-clean tests-clean tgz-clean
