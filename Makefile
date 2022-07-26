@@ -49,6 +49,7 @@ tgz: libnewrelic.a newrelic-daemon
 	cp libnewrelic.a newrelic/
 	cp newrelic-daemon newrelic/
 	cp include/libnewrelic.h newrelic/
+	cp make/newrelic.mk newrelic/
 	tar czf newrelic.tgz newrelic
 	rm -rf newrelic
 
