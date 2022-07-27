@@ -46,10 +46,11 @@ all: libnewrelic.a newrelic-daemon
 .PHONY: tgz
 tgz: libnewrelic.a newrelic-daemon
 	mkdir newrelic
-	cp libnewrelic.a newrelic/
-	cp newrelic-daemon newrelic/
+	cp libnewrelic.a         newrelic/
+	cp newrelic-daemon       newrelic/
+	cp VERSION               newrelic/
 	cp include/libnewrelic.h newrelic/
-	cp make/newrelic.mk newrelic/
+	cp make/newrelic.mk      newrelic/
 	tar czf newrelic.tgz newrelic
 	rm -rf newrelic
 
