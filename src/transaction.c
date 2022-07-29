@@ -99,9 +99,13 @@ newrelic_txn_t* newrelic_start_transaction(newrelic_app_t* app,
   nrtxnopt_t* options = NULL;
   nr_attribute_config_t* attribute_config = NULL;
 
+  if (NULL == name) {
+    name = "NULL";
+  }
+
   if (NULL == app) {
     nrl_error(NRL_INSTRUMENT,
-              "unable to start transaction with a NULL application");
+              "unable to start transaction(\"%s\") with a NULL application", name);
     return NULL;
   }
 
@@ -112,7 +116,7 @@ newrelic_txn_t* newrelic_start_transaction(newrelic_app_t* app,
 
   transaction = nr_malloc(sizeof(newrelic_txn_t));
   if (NR_FAILURE == nrt_mutex_init(&transaction->lock, 0)) {
-    nrl_error(NRL_INSTRUMENT, "unable to initialise transaction lock");
+    nrl_error(NRL_INSTRUMENT, "unable to initialise transaction(\"%s\") lock", name);
     nr_free(transaction);
     return NULL;
   }
@@ -124,13 +128,9 @@ newrelic_txn_t* newrelic_start_transaction(newrelic_app_t* app,
   }
   nrt_mutex_unlock(&app->lock);
   if (NULL == transaction->txn) {
-    nrl_error(NRL_INSTRUMENT, "unable to start transaction");
+    nrl_error(NRL_INSTRUMENT, "unable to start transaction(\"%s\")", name);
     nr_free(transaction);
     return NULL;
-  }
-
-  if (NULL == name) {
-    name = "NULL";
   }
 
   nr_txn_set_path(NULL, transaction->txn, name, NR_PATH_TYPE_ACTION,
@@ -141,10 +141,10 @@ newrelic_txn_t* newrelic_start_transaction(newrelic_app_t* app,
 
   if (is_web_transaction) {
     nr_txn_set_as_web_transaction(transaction->txn, 0);
-    nrl_verbose(NRL_INSTRUMENT, "starting web transaction \"%s\"", name);
+    nrl_verbose(NRL_INSTRUMENT, "starting web transaction(\"%s\")", name);
   } else {
     nr_txn_set_as_background_job(transaction->txn, 0);
-    nrl_verbose(NRL_INSTRUMENT, "starting non-web transaction \"%s\"", name);
+    nrl_verbose(NRL_INSTRUMENT, "starting non-web transaction(\"%s\")", name);
   }
 
   return transaction;
